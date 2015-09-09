@@ -59,10 +59,10 @@ A.Draw('blue')
 B.Draw('red')
 C.Draw('magenta')
 D.Draw('purple')
-plt.annotate('Lose at t = '+str(100), xy=(100, 0),  xycoords='data',
-                xytext=(-50, 30), textcoords='offset points',
-                arrowprops=dict(arrowstyle="->")
-                )
+#plt.annotate('Lose at t = '+str(100), xy=(100, 0),  xycoords='data',
+#                xytext=(-50, 30), textcoords='offset points',
+#                arrowprops=dict(arrowstyle="->")
+#                )
 plt.grid(True)
 plt.legend(loc = 0)
 plt.xlabel('bet index(t)')
