@@ -7,42 +7,39 @@ class Object:
     p = None
     T = None
     W = None
+    E = None
+    W_0 = None
+
     def __init__(self,W0,TMax,p):
-        self.W = [W0]
+        self.W = [0  for x in range(TMax + 1)]
+        self.W_0 = W0
+        self.E = [W0]
         self.T = TMax
         self.p = p
-        #Calculate for every t in TMax
-        #save by array W where W[0] = W0
-        #W(t) = W[t]
+
+
+    def Expectation(self):
         t = 1
         while(t <= self.T):
-            if(self.W[t - 1] > 0):
-                tmp =  self.W[t-1] + 2 * bernoulli.rvs(self.p) - 1
-                if(tmp >= 0):
-                    self.W.append(tmp)
-
-                else:
-                    self.W.append(0)
-            else:
-                self.W.append(0)
+            self.E.append(self.E[t-1] +(2*self.p - 1))
             t+=1
+
+
     def Calculate(self):
+        self.W[0] = self.W_0
         t = 1
-        while(t <= self.T):
-            if(self.W[t - 1] > 0):
-                tmp =  self.W[t-1] + 2 * bernoulli.rvs(self.p) - 1
-                if(tmp >= 0):
-                    self.W.append(tmp)
-
-                else:
-                    self.W.append(0)
-            else:
-                self.W.append(0)
+        while(t <= self.T) and(self.W[t-1]>0):
+            self.W[t] =  self.W[t-1] + 2 * bernoulli.rvs(self.p) - 1
             t+=1
+
 
     #function to get index of W(t)
     def __getitem__(self, item):
         return self.W[item]
+
+
+    def __setitem__(self, key, value):
+        self.W[key] = self.W[key] + value
 
     #find point where wealth became 0
     def Poin(self):
@@ -51,47 +48,70 @@ class Object:
             i+=1
         return i
 
+
     def MakeDetail(self):
         # make a pointer to show lasted wealth or where player lose
         if(self.Poin() > self.T):
-            plt.annotate('W(TMax) ='+str(self[-1]), xy=(self.T,self[-1]),  xycoords='data',xytext=(-100, 30), textcoords='offset points',arrowprops=dict(arrowstyle="->"))
+            plt.annotate('AVG[TMax] ='+str(self[-1]), xy=(self.T,self[-1]),  xycoords='data',xytext=(-100, 30), textcoords='offset points',arrowprops=dict(arrowstyle="->"))
         else:
             plt.annotate('t = '+str(self.Poin()), xy=(self.Poin(),self[self.Poin()]),  xycoords='data',xytext=(-50, 30), textcoords='offset points',arrowprops=dict(arrowstyle="->"))
     #Plot line
-    def Draw(self,Color):
+    def Draw(self,Color,Times):
         x = np.arange(len(self.W))
-        plt.plot(x,self.W,color = Color, lw = 3,label = 'J = '+str(self.W[0]))
+        plt.plot(x,self.W,color = Color, lw = 3, label = 'J = '+str(Times))
+
+
+
+    def DrawE(self):
+        x = np.arange(len(self.E))
+        plt.plot(x,self.E,color = 'black', lw = 3, label = 'Expectation')
+
+
+    def __add__(self, other):
+        for i in range(self.T + 1):
+            self.W[i] = self.W[i] + other.W[i]
+        return self
+
+    def CalculateAverage(self,Times):
+        for i in range(self.T + 1):
+            self.W[i] = 1.0* self.W[i]/ Times
+
 
     #Print result on terminal
     def __str__(self):
-        return 'p = %s\nTMax = %s\nW[0..Tmax] = %s\n'%(self.p,self.T,self.W)
-
-A = Object(5,500,0.51)
-B = Object(15,500,0.51)
-C = Object(50,500,0.51)
-D = Object(200,500,0.51)
-
-avg = []
-for i in range(D.T):
-    avg.append((A[i]+B[i]+C[i]+D[i])/4)
-x = np.arange(len(avg))
-plt.plot(x,avg,color = 'green',lw =3,label = 'avg')
-
-A.Draw('blue')
-B.Draw('red')
-C.Draw('magenta')
-D.Draw('purple')
-A.MakeDetail()
-B.MakeDetail()
-C.MakeDetail()
-D.MakeDetail()
+        return 'p = %s\nTMax = %s\nW[0..Tmax] = %s\nE[0..TMax] = %s\n'%(self.p,self.T,self.W,self.E)
 
 
-#plt.axis([-5,501,-5,401])
+def Calculate(Times,Color):
+    i = 1
+    AVG = Object(W0 = 20, TMax = 500, p = 0.51)
+    while(i <= Times):
+        A = Object(W0 = 20, TMax = 500, p = 0.51)
+        A.Calculate()
+        AVG = AVG + A
+        i+=1
+    AVG.CalculateAverage(Times)
+    AVG.Draw(Color,Times)
+    #AVG.MakeDetail()
+    if(Times == 200):
+        AVG.Expectation()
+        AVG.DrawE()
+
+
+Calculate(5,'red')
+Calculate(15,'blue')
+Calculate(50,'purple')
+Calculate(200,'magenta')
 
 plt.grid(True)
 plt.legend(loc = 0)
 plt.xlabel('bet index(t)')
 plt.ylabel('wealth(in $)')
 plt.show()
+
+
+
+
+
+
 
