@@ -85,7 +85,3 @@ plt.xlabel('bet index(t)')
 plt.ylabel('wealth(in $)')
 plt.show()
 
-print A.Poin()
-print B.Poin()
-print C.Poin()
-print D.Poin()
