@@ -93,7 +93,7 @@ def Calculate(Times,Color):
     AVG.CalculateAverage(Times)
     AVG.Draw(Color,Times)
     #AVG.MakeDetail()
-    if(Times == 200):
+    if(Times >= 200):
         AVG.Expectation()
         AVG.DrawE()
 
