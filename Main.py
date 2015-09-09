@@ -11,6 +11,9 @@ class Object:
         self.W = [W0]
         self.T = TMax
         self.p = p
+        #Calculate for every t in TMax
+        #save by array W where W[0] = W0
+        #W(t) = W[t]
         t = 1
         while(t <= self.T):
             if(self.W[t - 1] > 0):
@@ -36,9 +39,12 @@ class Object:
             else:
                 self.W.append(0)
             t+=1
+
+    #function to get index of W(t)
     def __getitem__(self, item):
         return self.W[item]
 
+    #find point where wealth became 0
     def Poin(self):
         i = 0
         while(i<=self.T)and(self.W[i]>0):
@@ -46,13 +52,17 @@ class Object:
         return i
 
     def MakeDetail(self):
+        # make a pointer to show lasted wealth or where player lose
         if(self.Poin() > self.T):
             plt.annotate('W(TMax) ='+str(self[-1]), xy=(self.T,self[-1]),  xycoords='data',xytext=(-100, 30), textcoords='offset points',arrowprops=dict(arrowstyle="->"))
         else:
             plt.annotate('t = '+str(self.Poin()), xy=(self.Poin(),self[self.Poin()]),  xycoords='data',xytext=(-50, 30), textcoords='offset points',arrowprops=dict(arrowstyle="->"))
+    #Plot line
     def Draw(self,Color):
         x = np.arange(len(self.W))
         plt.plot(x,self.W,color = Color, lw = 3,label = 'J = '+str(self.W[0]))
+
+    #Print result on terminal
     def __str__(self):
         return 'p = %s\nTMax = %s\nW[0..Tmax] = %s\n'%(self.p,self.T,self.W)
 
