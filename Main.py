@@ -43,28 +43,27 @@ class Object:
 
     #find point where wealth became 0
     def Poin(self):
-        i = 0
-        while(i<=self.T)and(self.W[i]>0):
-            i+=1
+        i = self.T
+        while(i>=0)and(self.W[i]<=0):
+            i-=1
         return i
 
 
     def MakeDetail(self):
-        # make a pointer to show lasted wealth or where player lose
-        if(self.Poin() > self.T):
-            plt.annotate('AVG[TMax] ='+str(self[-1]), xy=(self.T,self[-1]),  xycoords='data',xytext=(-100, 30), textcoords='offset points',arrowprops=dict(arrowstyle="->"))
-        else:
-            plt.annotate('t = '+str(self.Poin()), xy=(self.Poin(),self[self.Poin()]),  xycoords='data',xytext=(-50, 30), textcoords='offset points',arrowprops=dict(arrowstyle="->"))
-    #Plot line
+
+        index = self.Poin()
+        plt.annotate('Wealth('+str(index)+')='+str(self.W[index]), xy=(index,self[index]),  xycoords='data',xytext=(-100, 30), textcoords='offset points',arrowprops=dict(arrowstyle="->"))
+
+
     def Draw(self,Color,Times):
-        x = np.arange(len(self.W))
-        plt.plot(x,self.W,color = Color, lw = 3, label = 'J = '+str(Times))
+
+        plt.plot(self.W,color = Color, lw = 2, label = 'J = '+str(Times))
 
 
 
     def DrawE(self):
-        x = np.arange(len(self.E))
-        plt.plot(x,self.E,color = 'black', lw = 3, label = 'Expectation')
+
+        plt.plot(self.E,color = 'black', lw = 3, label = 'Expectation')
 
 
     def __add__(self, other):
@@ -92,7 +91,7 @@ def Calculate(Times,Color):
         i+=1
     AVG.CalculateAverage(Times)
     AVG.Draw(Color,Times)
-    #AVG.MakeDetail()
+    AVG.MakeDetail()
     if(Times >= 200):
         AVG.Expectation()
         AVG.DrawE()
